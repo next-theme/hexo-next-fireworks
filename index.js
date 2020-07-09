@@ -4,8 +4,6 @@
 
 const Util = require('next-util');
 const utils = new Util(hexo, __dirname);
-const fs = require('fs');
-const path = require('path');
 
 hexo.extend.filter.register('theme_inject', injects => {
 
@@ -16,8 +14,6 @@ hexo.extend.filter.register('theme_inject', injects => {
 hexo.extend.generator.register('fireworks', () => {
   return {
     path: 'lib/fireworks.js',
-    data: function() {
-      return fs.createReadStream(path.join(__dirname, 'fireworks.js'));
-    }
+    data: utils.getFileContent('fireworks.js')
   };
 });
