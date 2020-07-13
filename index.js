@@ -2,7 +2,7 @@
 
 'use strict';
 
-const Util = require('next-util');
+const Util = require('@next-theme/utils');
 const utils = new Util(hexo, __dirname);
 
 hexo.extend.filter.register('theme_inject', injects => {
