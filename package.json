@@ -1,6 +1,6 @@
 {
   "name": "hexo-next-fireworks",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Fireworks animation for NexT.",
   "main": "index.js",
   "scripts": {
