@@ -1,27 +1,30 @@
 // Fireworks
 window.addEventListener('load', () => {
-  var canvasEl = document.createElement("canvas");
+  const canvasEl = document.createElement("canvas");
   canvasEl.classList.add("fireworks");
   document.body.append(canvasEl);
-  var ctx = canvasEl.getContext("2d"),
-    numberOfParticules = 30,
-    pointerX = 0,
-    pointerY = 0,
-    tap = "mousedown",
-    colors = ["#FF1461", "#18FF92", "#5A87FF", "#FBF38C"],
-    setCanvasSize = debounce(() => {
-      canvasEl.width = 2 * window.innerWidth,
-      canvasEl.height = 2 * window.innerHeight,
-      canvasEl.style.width = window.innerWidth + "px",
-      canvasEl.style.height = window.innerHeight + "px",
-      canvasEl.getContext("2d").scale(2, 2)
-    }, 500),
-    render = anime({
-      duration: 1 / 0,
-      update: function() {
-        ctx.clearRect(0, 0, canvasEl.width, canvasEl.height)
-      }
-    });
+  const ctx = canvasEl.getContext("2d");
+  const numberOfParticules = 30;
+  let pointerX = 0;
+  let pointerY = 0;
+  const tap = "mousedown";
+  const colors = ["#FF1461", "#18FF92", "#5A87FF", "#FBF38C"];
+
+  const setCanvasSize = debounce(() => {
+    canvasEl.width = 2 * window.innerWidth,
+    canvasEl.height = 2 * window.innerHeight,
+    canvasEl.style.width = window.innerWidth + "px",
+    canvasEl.style.height = window.innerHeight + "px",
+    canvasEl.getContext("2d").scale(2, 2)
+  }, 500);
+
+  const render = anime({
+    duration: 1 / 0,
+    update: function() {
+      ctx.clearRect(0, 0, canvasEl.width, canvasEl.height)
+    }
+  });
+
   document.addEventListener(tap, e => {
     "sidebar" !== e.target.id && "toggle-sidebar" !== e.target.id && "A" !== e.target.nodeName && "IMG" !== e.target.nodeName && (render.play(), updateCoords(e), animateParticules(pointerX, pointerY))
   }, !1),
@@ -31,20 +34,18 @@ window.addEventListener('load', () => {
   function updateCoords(e) {
     pointerX = (e.clientX || e.touches[0].clientX) - canvasEl.getBoundingClientRect().left,
     pointerY = e.clientY || e.touches[0].clientY - canvasEl.getBoundingClientRect().top
-  };
+  }
 
   function setParticuleDirection(e) {
-    var t = anime.random(0, 360) * Math.PI / 180,
-      a = anime.random(50, 180),
-      n = [-1, 1][anime.random(0, 1)] * a;
+    const t = anime.random(0, 360) * Math.PI / 180, a = anime.random(50, 180), n = [-1, 1][anime.random(0, 1)] * a;
     return {
       x: e.x + n * Math.cos(t),
       y: e.y + n * Math.sin(t)
     }
-  };
+  }
 
   function createParticule(e, t) {
-    var a = {};
+    const a = {};
     return a.x = e,
       a.y = t,
       a.color = colors[anime.random(0, colors.length - 1)],
@@ -57,10 +58,10 @@ window.addEventListener('load', () => {
         ctx.fill()
       },
       a
-  };
+  }
 
   function createCircle(e, t) {
-    var a = {};
+    const a = {};
     return a.x = e,
       a.y = t,
       a.color = "#F00",
@@ -77,13 +78,13 @@ window.addEventListener('load', () => {
         ctx.globalAlpha = 1
       },
       a
-  };
+  }
 
   function renderParticule(e) {
-    for (var t = 0; t < e.animatables.length; t++) {
+    for (let t = 0; t < e.animatables.length; t++) {
       e.animatables[t].target.draw()
     }
-  };
+  }
 
   function animateParticules(e, t) {
     for (var a = createCircle(e, t), n = [], i = 0; i < numberOfParticules; i++) {
@@ -114,17 +115,17 @@ window.addEventListener('load', () => {
       easing: "easeOutExpo",
       update: renderParticule
     }, 0)
-  };
+  }
 
   function debounce(fn, delay) {
-    var timer
+    let timer;
     return function() {
-      var context = this
-      var args = arguments
+      const context = this;
+      const args = arguments;
       clearTimeout(timer)
       timer = setTimeout(() => {
         fn.apply(context, args)
       }, delay)
-    }
-  };
+    };
+  }
 });
