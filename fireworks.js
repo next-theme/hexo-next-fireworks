@@ -15,25 +15,25 @@ window.addEventListener('load', () => {
     canvasEl.height = 2 * window.innerHeight,
     canvasEl.style.width = window.innerWidth + "px",
     canvasEl.style.height = window.innerHeight + "px",
-    canvasEl.getContext("2d").scale(2, 2)
+    canvasEl.getContext("2d").scale(2, 2);
   }, 500);
 
   const render = anime({
     duration: 1 / 0,
     update: function() {
-      ctx.clearRect(0, 0, canvasEl.width, canvasEl.height)
+      ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
     }
   });
 
   document.addEventListener(tap, e => {
-    "sidebar" !== e.target.id && "toggle-sidebar" !== e.target.id && "A" !== e.target.nodeName && "IMG" !== e.target.nodeName && (render.play(), updateCoords(e), animateParticules(pointerX, pointerY))
+    "sidebar" !== e.target.id && "toggle-sidebar" !== e.target.id && "A" !== e.target.nodeName && "IMG" !== e.target.nodeName && (render.play(), updateCoords(e), animateParticules(pointerX, pointerY));
   }, !1),
     setCanvasSize(),
-    window.addEventListener("resize", setCanvasSize, !1)
+    window.addEventListener("resize", setCanvasSize, !1);
 
   function updateCoords(e) {
     pointerX = (e.clientX || e.touches[0].clientX) - canvasEl.getBoundingClientRect().left,
-    pointerY = e.clientY || e.touches[0].clientY - canvasEl.getBoundingClientRect().top
+    pointerY = e.clientY || e.touches[0].clientY - canvasEl.getBoundingClientRect().top;
   }
 
   function setParticuleDirection(e) {
@@ -41,7 +41,7 @@ window.addEventListener('load', () => {
     return {
       x: e.x + n * Math.cos(t),
       y: e.y + n * Math.sin(t)
-    }
+    };
   }
 
   function createParticule(e, t) {
@@ -57,7 +57,7 @@ window.addEventListener('load', () => {
         ctx.fillStyle = a.color,
         ctx.fill()
       },
-      a
+      a;
   }
 
   function createCircle(e, t) {
@@ -77,12 +77,12 @@ window.addEventListener('load', () => {
         ctx.stroke(),
         ctx.globalAlpha = 1
       },
-      a
+      a;
   }
 
   function renderParticule(e) {
     for (let t = 0; t < e.animatables.length; t++) {
-      e.animatables[t].target.draw()
+      e.animatables[t].target.draw();
     }
   }
 
@@ -93,10 +93,10 @@ window.addEventListener('load', () => {
     anime.timeline().add({
       targets: n,
       x: function(e) {
-        return e.endPos.x
+        return e.endPos.x;
       },
       y: function(e) {
-        return e.endPos.y
+        return e.endPos.y;
       },
       radius: .1,
       duration: anime.random(1200, 1800),
@@ -114,7 +114,7 @@ window.addEventListener('load', () => {
       duration: anime.random(1200, 1800),
       easing: "easeOutExpo",
       update: renderParticule
-    }, 0)
+    }, 0);
   }
 
   function debounce(fn, delay) {
@@ -122,10 +122,10 @@ window.addEventListener('load', () => {
     return function() {
       const context = this;
       const args = arguments;
-      clearTimeout(timer)
+      clearTimeout(timer);
       timer = setTimeout(() => {
         fn.apply(context, args)
-      }, delay)
+      }, delay);
     };
   }
 });
