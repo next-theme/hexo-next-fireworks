@@ -7,7 +7,7 @@ Fireworks animation for NexT.
 
 ## Preview
 
-
+![Preview](https://user-images.githubusercontent.com/16272760/100604083-008c0800-3341-11eb-8f7d-7194111623b7.png)
 
 ## Install
 
