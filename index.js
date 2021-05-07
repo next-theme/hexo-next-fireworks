@@ -11,9 +11,7 @@ hexo.extend.filter.register('theme_inject', injects => {
   injects.style.push(utils.getFilePath('fireworks.styl'));
 });
 
-hexo.extend.generator.register('fireworks', () => {
-  return {
-    path: 'lib/fireworks.js',
-    data: utils.getFileContent('fireworks.js')
-  };
-});
+hexo.extend.generator.register('fireworks', () => ({
+  path: 'lib/fireworks.js',
+  data: utils.getFileContent('fireworks.js')
+}));
