@@ -14,3 +14,12 @@ Fireworks animation for NexT.
 ```bash
 npm install next-theme/hexo-next-fireworks
 ```
+
+## Usage
+
+You can set options of this plugin in the **Hexo's `_config.yml`** (which locates in the root dir of your blog):
+
+```yml
+fireworks:
+  enable: true
+```
