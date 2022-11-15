@@ -5,7 +5,7 @@
 const Util = require('@next-theme/utils');
 const utils = new Util(hexo, __dirname);
 
-hexo.config.fireworks = deepMerge({
+hexo.config.fireworks = Object.assign({
   enable: true,
 }, hexo.config.fireworks);
 const config = hexo.config.fireworks;
