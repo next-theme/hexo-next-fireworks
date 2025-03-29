@@ -6,7 +6,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": "next-theme/hexo-next-fireworks",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/next-theme/hexo-next-fireworks.git"
+  },
   "keywords": [
     "Hexo",
     "NexT"
