@@ -1,131 +1,168 @@
 // Fireworks
 window.addEventListener('load', () => {
-  const canvasEl = document.createElement("canvas");
-  canvasEl.classList.add("fireworks");
+  const canvasEl = document.createElement('canvas');
+  canvasEl.classList.add('fireworks');
   document.body.append(canvasEl);
-  const ctx = canvasEl.getContext("2d");
-  const numberOfParticules = 30;
+
+  const ctx = canvasEl.getContext('2d');
+  const numberOfParticles = 30;
+  const colors = ['#FF1461', '#18FF92', '#5A87FF', '#FBF38C'];
+  let animations = [];
+  let animationFrame = null;
   let pointerX = 0;
   let pointerY = 0;
-  const tap = "mousedown";
-  const colors = ["#FF1461", "#18FF92", "#5A87FF", "#FBF38C"];
 
-  const setCanvasSize = debounce(() => {
-    canvasEl.width = 2 * window.innerWidth,
-    canvasEl.height = 2 * window.innerHeight,
-    canvasEl.style.width = window.innerWidth + "px",
-    canvasEl.style.height = window.innerHeight + "px",
-    canvasEl.getContext("2d").scale(2, 2);
-  }, 500);
+  const resizeCanvas = debounce(setCanvasSize, 500);
 
-  const render = anime({
-    duration: 1 / 0,
-    update: function() {
-      ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
-    }
-  });
-
-  document.addEventListener(tap, e => {
-    "sidebar" !== e.target.id && "toggle-sidebar" !== e.target.id && "A" !== e.target.nodeName && "IMG" !== e.target.nodeName && (render.play(), updateCoords(e), animateParticules(pointerX, pointerY));
-  }, !1),
-    setCanvasSize(),
-    window.addEventListener("resize", setCanvasSize, !1);
-
-  function updateCoords(e) {
-    pointerX = (e.clientX || e.touches[0].clientX) - canvasEl.getBoundingClientRect().left,
-    pointerY = e.clientY || e.touches[0].clientY - canvasEl.getBoundingClientRect().top;
+  function setCanvasSize() {
+    canvasEl.width = 2 * window.innerWidth;
+    canvasEl.height = 2 * window.innerHeight;
+    canvasEl.style.width = window.innerWidth + 'px';
+    canvasEl.style.height = window.innerHeight + 'px';
+    ctx.scale(2, 2);
   }
 
-  function setParticuleDirection(e) {
-    const t = anime.random(0, 360) * Math.PI / 180, a = anime.random(50, 180), n = [-1, 1][anime.random(0, 1)] * a;
+  document.addEventListener('mousedown', event => {
+    const target = event.target;
+
+    if (
+      target.id === 'sidebar' ||
+      target.id === 'toggle-sidebar' ||
+      target.nodeName === 'A' ||
+      target.nodeName === 'IMG'
+    ) return;
+
+    updateCoords(event);
+    animateParticles(pointerX, pointerY);
+  }, false);
+
+  setCanvasSize();
+  window.addEventListener('resize', resizeCanvas, false);
+
+  function updateCoords(event) {
+    const bounds = canvasEl.getBoundingClientRect();
+    pointerX = event.clientX - bounds.left;
+    pointerY = event.clientY - bounds.top;
+  }
+
+  function random(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  function easeOutExpo(progress) {
+    return progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+  }
+
+  function interpolate(start, end, progress) {
+    return start + (end - start) * progress;
+  }
+
+  function createParticle(x, y) {
+    const color = colors[random(0, colors.length - 1)];
+    const radius = random(16, 32);
+    const angle = random(0, 360) * Math.PI / 180;
+    const distance = random(50, 180) * [-1, 1][random(0, 1)];
+
     return {
-      x: e.x + n * Math.cos(t),
-      y: e.y + n * Math.sin(t)
+      x,
+      y,
+      color,
+      radius,
+      endX: x + distance * Math.cos(angle),
+      endY: y + distance * Math.sin(angle)
     };
   }
 
-  function createParticule(e, t) {
-    const a = {};
-    return a.x = e,
-      a.y = t,
-      a.color = colors[anime.random(0, colors.length - 1)],
-      a.radius = anime.random(16, 32),
-      a.endPos = setParticuleDirection(a),
-      a.draw = function() {
-        ctx.beginPath(),
-        ctx.arc(a.x, a.y, a.radius, 0, 2 * Math.PI, !0),
-        ctx.fillStyle = a.color,
-        ctx.fill()
-      },
-      a;
+  function drawParticle(particle, easedProgress) {
+    ctx.beginPath();
+    ctx.arc(
+      interpolate(particle.x, particle.endX, easedProgress),
+      interpolate(particle.y, particle.endY, easedProgress),
+      interpolate(particle.radius, 0.1, easedProgress),
+      0,
+      2 * Math.PI,
+      true
+    );
+    ctx.fillStyle = particle.color;
+    ctx.fill();
   }
 
-  function createCircle(e, t) {
-    const a = {};
-    return a.x = e,
-      a.y = t,
-      a.color = "#F00",
-      a.radius = .1,
-      a.alpha = .5,
-      a.lineWidth = 6,
-      a.draw = function() {
-        ctx.globalAlpha = a.alpha,
-        ctx.beginPath(),
-        ctx.arc(a.x, a.y, a.radius, 0, 2 * Math.PI, !0),
-        ctx.lineWidth = a.lineWidth,
-        ctx.strokeStyle = a.color,
-        ctx.stroke(),
-        ctx.globalAlpha = 1
-      },
-      a;
+  function drawCircle(animation, elapsed) {
+    const progress = Math.min(elapsed / animation.circleDuration, 1);
+    const easedProgress = easeOutExpo(progress);
+    const alphaProgress = Math.min(elapsed / animation.alphaDuration, 1);
+
+    ctx.globalAlpha = interpolate(0.5, 0, alphaProgress);
+    ctx.beginPath();
+    ctx.arc(
+      animation.x,
+      animation.y,
+      interpolate(0.1, animation.circleRadius, easedProgress),
+      0,
+      2 * Math.PI,
+      true
+    );
+    ctx.lineWidth = interpolate(6, 0, easedProgress);
+    ctx.strokeStyle = '#F00';
+    ctx.stroke();
+    ctx.globalAlpha = 1;
   }
 
-  function renderParticule(e) {
-    for (let t = 0; t < e.animatables.length; t++) {
-      e.animatables[t].target.draw();
+  function render(timestamp) {
+    ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
+    const activeAnimations = [];
+
+    for (const animation of animations) {
+      const elapsed = Math.max(0, timestamp - animation.startTime);
+
+      if (elapsed >= animation.particleDuration) continue;
+
+      const particleProgress = easeOutExpo(elapsed / animation.particleDuration);
+
+      for (const particle of animation.particles) {
+        drawParticle(particle, particleProgress);
+      }
+
+      if (elapsed < animation.alphaDuration) drawCircle(animation, elapsed);
+      activeAnimations.push(animation);
+    }
+
+    animations = activeAnimations;
+
+    if (animations.length) {
+      animationFrame = requestAnimationFrame(render);
+    } else {
+      animationFrame = null;
     }
   }
 
-  function animateParticules(e, t) {
-    for (var a = createCircle(e, t), n = [], i = 0; i < numberOfParticules; i++) {
-      n.push(createParticule(e, t));
+  function animateParticles(x, y) {
+    const particles = [];
+
+    for (let index = 0; index < numberOfParticles; index++) {
+      particles.push(createParticle(x, y));
     }
-    anime.timeline().add({
-      targets: n,
-      x: function(e) {
-        return e.endPos.x;
-      },
-      y: function(e) {
-        return e.endPos.y;
-      },
-      radius: .1,
-      duration: anime.random(1200, 1800),
-      easing: "easeOutExpo",
-      update: renderParticule
-    }).add({
-      targets: a,
-      radius: anime.random(80, 160),
-      lineWidth: 0,
-      alpha: {
-        value: 0,
-        easing: "linear",
-        duration: anime.random(600, 800)
-      },
-      duration: anime.random(1200, 1800),
-      easing: "easeOutExpo",
-      update: renderParticule
-    }, 0);
+
+    animations.push({
+      x,
+      y,
+      particles,
+      particleDuration: random(1200, 1800),
+      circleRadius: random(80, 160),
+      alphaDuration: random(600, 800),
+      circleDuration: random(1200, 1800),
+      startTime: performance.now()
+    });
+
+    if (animationFrame === null) animationFrame = requestAnimationFrame(render);
   }
 
   function debounce(fn, delay) {
     let timer;
-    return function() {
-      const context = this;
-      const args = arguments;
+
+    return function(...args) {
       clearTimeout(timer);
-      timer = setTimeout(() => {
-        fn.apply(context, args)
-      }, delay);
+      timer = setTimeout(() => fn.apply(this, args), delay);
     };
   }
 });

@@ -13,7 +13,7 @@ const config = hexo.config.fireworks;
 if (config.enable) {
   hexo.extend.filter.register('theme_inject', injects => {
 
-    injects.head.raw('fireworks', '<script async src="{{ url_for("lib/fireworks.js") }}"></script>');
+    injects.head.raw('fireworks', '<script defer src="{{ url_for("lib/fireworks.js") }}"></script>');
     injects.style.push(utils.getFilePath('fireworks.styl'));
   });
 
